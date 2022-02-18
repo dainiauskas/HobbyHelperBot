@@ -15,12 +15,6 @@ var (
 	Name    string
 )
 
-const (
-	linkTemplate string = `От: <a href="tg://user?id=%d">%s</a>%s
-Ссылка: <a href="%s">%s</a>
-`
-)
-
 func init() {
 	if err := godotenv.Load(); err != nil {
 		panic("Error loading .env file")
@@ -42,7 +36,26 @@ func main() {
 
 	log.Info("Authorized on account %s", bot.Self.UserName)
 
-	bg := InitBanggood(bot)
+	checker := []LinkService{
+		LinkOp{
+			Name:     "banggood",
+			RefID:    os.Getenv("BANGGOOD_REF_ID"),
+			RefParam: "p",
+			api:      bot,
+		},
+		LinkOp{
+			Name:     "radiomasterrc",
+			RefID:    os.Getenv("RADIOMASTER_REF_ID"),
+			RefParam: "sca_ref",
+			api:      bot,
+		},
+		LinkOp{
+			Name:     "betafpv",
+			RefID:    os.Getenv("BETAFPV_REF_ID"),
+			RefParam: "sca_ref",
+			api:      bot,
+		},
+	}
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
@@ -65,6 +78,10 @@ func main() {
 			continue
 		}
 
-		go bg.Check(update)
+		// go bg.Check(update)
+
+		for _, ch := range checker {
+			go ch.Check(update)
+		}
 	}
 }
