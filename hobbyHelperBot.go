@@ -34,7 +34,7 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	log.Info("Authorized on account %s", bot.Self.UserName)
+	log.Infof("Authorized on account %s", bot.Self.UserName)
 
 	exclude := []int64{-1001193714500}
 
