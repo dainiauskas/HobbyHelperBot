@@ -1,0 +1,17 @@
+[Unit]
+Description=Hobby Helper Bot
+ConditionFileIsExecutable=/opt/hobbyHelper/HobbyHelperBot
+
+[Service]
+StartLimitInterval=5
+StartLimitBurst=10
+ExecStart=/opt/hobbyHelper/HobbyHelperBot
+
+WorkingDirectory=/opt/hobbyHelper
+
+Restart=always
+
+RestartSec=120
+
+[Install]
+WantedBy=multi-user.target
