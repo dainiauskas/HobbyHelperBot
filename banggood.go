@@ -6,21 +6,13 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"regexp"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-)
-
-const (
-	referallParameter string = "p"
-	referalID         string = "29181220952666201804"
-
-	bgTemplate string = `От: <a href="tg://user?id=%d">%s</a>%s
-Ссылка: <a href="%s">%s</a>
-`
 )
 
 type Banggood struct {
@@ -30,7 +22,7 @@ type Banggood struct {
 
 func InitBanggood(bot *tgbotapi.BotAPI) *Banggood {
 	return &Banggood{
-		RefID: referalID,
+		RefID: os.Getenv("BANGOOD_REF_ID"),
 		bot:   bot,
 	}
 }
@@ -93,7 +85,7 @@ func (b *Banggood) Check(update tgbotapi.Update) {
 
 	uris := uri.String()
 
-	text := fmt.Sprintf(bgTemplate,
+	text := fmt.Sprintf(linkTemplate,
 		update.Message.From.ID, update.Message.From.String(),
 		othText,
 		uris, title,
@@ -119,7 +111,7 @@ func (b *Banggood) deleteMessage(chatID int64, messageID int) error {
 
 func (b *Banggood) replaceReferal(u *url.URL, q url.Values) *url.URL {
 	nq := make(url.Values)
-	nq.Add(referallParameter, b.RefID)
+	nq.Add("p", b.RefID)
 
 	u.RawQuery = nq.Encode()
 
