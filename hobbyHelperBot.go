@@ -36,24 +36,29 @@ func main() {
 
 	log.Info("Authorized on account %s", bot.Self.UserName)
 
+	exclude := []int64{-1001193714500}
+
 	checker := []LinkService{
 		LinkOp{
-			Name:     "banggood",
-			RefID:    os.Getenv("BANGGOOD_REF_ID"),
-			RefParam: "p",
-			api:      bot,
+			Name:        "banggood",
+			RefID:       os.Getenv("BANGGOOD_REF_ID"),
+			RefParam:    "p",
+			api:         bot,
+			excludeFrom: exclude,
 		},
 		LinkOp{
-			Name:     "radiomasterrc",
-			RefID:    os.Getenv("RADIOMASTER_REF_ID"),
-			RefParam: "sca_ref",
-			api:      bot,
+			Name:        "radiomasterrc",
+			RefID:       os.Getenv("RADIOMASTER_REF_ID"),
+			RefParam:    "sca_ref",
+			api:         bot,
+			excludeFrom: exclude,
 		},
 		LinkOp{
-			Name:     "betafpv",
-			RefID:    os.Getenv("BETAFPV_REF_ID"),
-			RefParam: "sca_ref",
-			api:      bot,
+			Name:        "betafpv",
+			RefID:       os.Getenv("BETAFPV_REF_ID"),
+			RefParam:    "sca_ref",
+			api:         bot,
+			excludeFrom: exclude,
 		},
 	}
 
