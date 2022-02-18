@@ -25,10 +25,11 @@ type LinkOp struct {
 	RefID    string
 	RefParam string
 
-	update tgbotapi.Update
-	msg    *tgbotapi.Message
-	url    *url.URL
-	urlStr string
+	update      tgbotapi.Update
+	msg         *tgbotapi.Message
+	url         *url.URL
+	urlStr      string
+	excludeFrom []int64
 
 	api *tgbotapi.BotAPI
 }
@@ -51,8 +52,21 @@ func (l LinkOp) Check(u tgbotapi.Update) {
 }
 
 func (l *LinkOp) valid() (ok bool) {
-	if !l.setMessage() || !l.setURL() {
+	if !l.setMessage() || !l.setURL() || l.exclude() {
 		return
+	}
+
+	return true
+}
+
+func (l *LinkOp) exclude() bool {
+	fw := l.msg.ForwardFromChat
+	if fw != nil {
+		for _, id := range l.excludeFrom {
+			if fw.ID == id {
+				return false
+			}
+		}
 	}
 
 	return true
