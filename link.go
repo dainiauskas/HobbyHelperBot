@@ -39,6 +39,8 @@ func (l LinkOp) Check(u tgbotapi.Update) {
 	l.url = nil
 	l.msg = nil
 
+	log.Debug(l.RefID, l.RefParam)
+
 	if !l.valid() {
 		return
 	}
@@ -52,7 +54,7 @@ func (l LinkOp) Check(u tgbotapi.Update) {
 }
 
 func (l *LinkOp) valid() (ok bool) {
-	if !l.setMessage() || !l.setURL() || l.exclude() {
+	if !l.setMessage() || !l.setURL() || !l.exclude() {
 		return
 	}
 
@@ -61,6 +63,7 @@ func (l *LinkOp) valid() (ok bool) {
 
 func (l *LinkOp) exclude() bool {
 	fw := l.msg.ForwardFromChat
+
 	if fw != nil {
 		for _, id := range l.excludeFrom {
 			if fw.ID == id {
@@ -89,7 +92,7 @@ func (l *LinkOp) setURL() (ok bool) {
 	}
 
 	if !strings.Contains(u, l.Name) {
-		log.Debug("not contains name", l.Name)
+		log.Debugf("not contains name: %s", l.Name)
 		return
 	}
 
@@ -101,7 +104,7 @@ func (l *LinkOp) setURL() (ok bool) {
 		return
 	}
 
-	log.Debugf("Host: %s", l.url.Host)
+	log.Debugf("Valid host: %s", l.url.Host)
 
 	l.setRef()
 
@@ -148,16 +151,24 @@ func (l *LinkOp) formatMessage() string {
 }
 
 func (l *LinkOp) postMessage() error {
+	log.Debug("Creating message")
+
 	msg := tgbotapi.NewMessage(l.msg.Chat.ID, l.formatMessage())
 	msg.ParseMode = "HTML"
 
+	log.Debug("Sending message")
 	_, err := l.api.Send(msg)
 
 	return err
 }
 
-func (l *LinkOp) deleteMessage() error {
-	_, err := l.api.Send(tgbotapi.NewDeleteMessage(l.msg.Chat.ID, l.msg.MessageID))
+func (l *LinkOp) deleteMessage() {
+	id := l.msg.MessageID
 
-	return err
+	log.Debugf("Deleting message: %d", id)
+	_, err := l.api.Send(tgbotapi.NewDeleteMessage(l.msg.Chat.ID, id))
+
+	if err != nil {
+		log.Error(err)
+	}
 }
