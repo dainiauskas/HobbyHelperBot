@@ -15,6 +15,12 @@ var (
 	Name    string
 )
 
+const (
+	linkTemplate string = `От: <a href="tg://user?id=%d">%s</a>%s
+Ссылка: <a href="%s">%s</a>
+`
+)
+
 func init() {
 	if err := godotenv.Load(); err != nil {
 		panic("Error loading .env file")
