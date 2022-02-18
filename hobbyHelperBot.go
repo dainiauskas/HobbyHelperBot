@@ -74,16 +74,18 @@ func main() {
 	log.Info("Start listining")
 
 	for update := range updates {
+		log.Debug("Got update")
+
 		if update.Message == nil {
+			log.Debug("Message empty", update)
 			continue
 		}
 
 		// Skipping bots
 		if update.Message.From.IsBot {
+			log.Debug("It is bot mssage")
 			continue
 		}
-
-		// go bg.Check(update)
 
 		for _, ch := range checker {
 			go ch.Check(update)
