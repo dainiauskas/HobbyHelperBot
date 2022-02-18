@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -87,8 +88,10 @@ func main() {
 			continue
 		}
 
+		fmt.Printf("%+v\n", update)
+
 		for _, ch := range checker {
-			go ch.Check(update)
+			go ch.Check(*update.Message)
 		}
 	}
 }

@@ -17,7 +17,7 @@ const (
 )
 
 type LinkService interface {
-	Check(tgbotapi.Update)
+	Check(tgbotapi.Message)
 }
 
 type LinkOp struct {
@@ -25,8 +25,7 @@ type LinkOp struct {
 	RefID    string
 	RefParam string
 
-	update      tgbotapi.Update
-	msg         *tgbotapi.Message
+	msg         tgbotapi.Message
 	url         *url.URL
 	urlStr      string
 	excludeFrom []int64
@@ -34,10 +33,9 @@ type LinkOp struct {
 	api *tgbotapi.BotAPI
 }
 
-func (l LinkOp) Check(u tgbotapi.Update) {
-	l.update = u
+func (l LinkOp) Check(msg tgbotapi.Message) {
 	l.url = nil
-	l.msg = nil
+	l.msg = msg
 
 	log.Debug(l.RefID, l.RefParam)
 
@@ -54,7 +52,7 @@ func (l LinkOp) Check(u tgbotapi.Update) {
 }
 
 func (l *LinkOp) valid() (ok bool) {
-	if !l.setMessage() || !l.setURL() || !l.exclude() {
+	if !l.setURL() || !l.exclude() {
 		return
 	}
 
@@ -73,14 +71,6 @@ func (l *LinkOp) exclude() bool {
 	}
 
 	return true
-}
-
-func (l *LinkOp) setMessage() bool {
-	l.msg = l.update.Message
-
-	log.Debugf("Set message: %s", l.msg.Text)
-
-	return l.msg != nil
 }
 
 func (l *LinkOp) setURL() (ok bool) {
